@@ -8,11 +8,11 @@
  * This class is for parsing Logs, Events, Messages and other info from Qualcomm modems
  */
 
+#include <iostream>
 #include "Parser.hh"
 #include "common.hh"
 
-Parser::Parser()
-: bDump(false)
+Parser::Parser(): bDump(false)
 {
     // Initialize Log table
 }
@@ -22,28 +22,28 @@ Parser::Parser()
  */
 int Parser::process_log(unsigned char *raw, int len)
 {
-    std::cout << '\n' << __func__ ;
+    std::cout << __func__ << " | len:" << len << " | ";
 
-    // Saving packet. Note that in case we want to keep packet it should
-    // be copied, not just referenced.
+    // In case we want to keep packet it should be copied, not just referenced.
     raw_ = raw;
     len_ = len;
     
-    if(bDump)    // Provide hex dump to console
-        dump(raw, len);
+    if (bDump)
+        dump(raw, len);   // Provide hex dump to console
 
-    log_code_ = *(uint16_t*)(raw+2); 
+    log_code_ = *(uint16_t*)(raw+2);
 
     // Search for descriptor of log packet
     auto couple = log_descriptors.find(log_code_);
+
     if(couple == log_descriptors.end())
-        printf("\n\t- Unknown Log packet with id: 0x%.04hX len=%d", log_code_, len);
+        printf(" | Unknown Log packet id:0x%.04hX len=%d\n", log_code_, len);
     else
     {
         LogDescriptor desc = couple->second;
 
-        std::cout << "\n\tProcessing packet: <" << desc.name << "> with id: ";
-        printf("0x%.04hX", desc.code);
+        printf("[0x%.04hX] ", desc.code);
+        std::cout << desc.name;
 
         Decoder decoder = desc.decoder;
         (this->*decoder)();    // call the decoder
@@ -54,12 +54,12 @@ int Parser::process_log(unsigned char *raw, int len)
 
 int Parser::dec_gsm_signalling()
 {
-    std::cout << "\nGSM LOG SIGNALLING handler";
+    std::cout << " handler:dec_gsm_signalling\n\n";
     return 0;
 }
 
 int Parser::dec_gsm_powerscan()
 {
-    std::cout << "\nGSM LOG POWER SCAN handler";
+    std::cout << " handler:dec_gsm_powerscan\n\n";
     return 0;
 }

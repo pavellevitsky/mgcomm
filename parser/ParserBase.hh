@@ -1,16 +1,12 @@
 #ifndef _ParserBase_h
 #define _ParserBase_h
 
-#include <map>
-#include <cstdint>
-#include <iostream>
-
-namespace {
-    // For unit-testing only
-
+namespace
+{
     static const uint16_t 
         LOG_1 = 0x0001,
-        LOG_2 = 0x0002;
+        LOG_2 = 0x0002,
+        LOG_3 = 0x0003;
 }
 
 class ParserBase
@@ -22,8 +18,8 @@ class ParserBase
         // Disable copy constructor
         ParserBase(ParserBase&) = delete;
 
-        /// Proceses Log stream from modem
-         int process_log(uint8_t *raw, int len);
+        // Proceses Log stream from modem
+        int process_log(uint8_t *raw, int len);
 
     protected:
 
@@ -37,28 +33,35 @@ class ParserBase
 
         typedef struct
         {
-            uint16_t code;
-            const char* name;
-            Decoder decoder;
+            uint16_t    code;
+            const char *name;
+            Decoder     decoder;
         } LogDescriptor;
 
         int decoder_1(uint8_t *packet, int len)
         {
-            std::cout << "\ndecode_1()";
+            std::cout << " | decode_1()\n";
             return 0;
         }
 
         int decoder_2(uint8_t *packet, int len) 
         {
-            std::cout << "\ndecode_2()";
+            std::cout << " | decode_2()\n";
             return 0;
         }
 
-        /// This structure defines decoder functions for logs by codes 
+        int decoder_3(uint8_t *packet, int len) 
+        {
+            std::cout << " | decode_3()\n";
+            return 0;
+        }
+
+        /// Defines decoder functions for logs by codes
         std::map<uint16_t, LogDescriptor> log_descriptors =
         {
-            {LOG_1, {LOG_1, "Log #1", &ParserBase::decoder_1}},
-            {LOG_2, {LOG_2, "Log #2", &ParserBase::decoder_2}},
+            {LOG_1, {LOG_1, "LOG_1", &ParserBase::decoder_1}},
+            {LOG_2, {LOG_2, "LOG_2", &ParserBase::decoder_2}},
+            {LOG_3, {LOG_3, "LOG_3", &ParserBase::decoder_3}},
         };
 };
 

@@ -6,27 +6,24 @@
  * @author Roman Raisin (roman.raisin@gmail.com)
  */
 
+#include <assert.h>
 #include <iostream>
 #include <cstring>
-#include <assert.h>
 #include "Parser.hh"
 
 int main(int argc, char **argv)
 {
-	std::cout << "\nParser unit test\n";
+	std::cout << "\n***** [UT] Parser *****\n";
 
 	Parser parser;
 	parser.bDump = true;
 
 	const char *packets[] = 
 	{
-		"ab\x2F\x51some data 1",
-		"cdd daYYbata 9",
-		"cd\x2F\x5B datdca 9",
-		"cdd daYYbata 3",
-		"ef\x64\x50ZZsome data 2",
-		"ghAD dZZ Bata 2",
-		"gh\x64\x5AZZso me dat",
+		"\xFF\x01\x2F\x51\xA0\x01\x02\x03",
+		"\xFF\x02\x2F\x5B\x10\x11\x12\x13",
+		"\xFF\x03\x64\x50\xA0\x21\x22\x23",
+		"\xFF\x04\x2F\x51\xA0\x31\x32\x33",
 	};
 
 	for(auto pkt: packets)
@@ -34,6 +31,7 @@ int main(int argc, char **argv)
 		parser.process_log((uint8_t*)pkt, strlen(pkt));
 	}
 
-	std::cout << "\nSUCCESS";
+	std::cout << "\n***** SUCCESS *****\n\n";
+
 	return 0;
 }
