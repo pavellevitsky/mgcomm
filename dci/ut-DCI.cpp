@@ -1,5 +1,5 @@
 /*!
- * @file unittest-DCI.cpp
+ * @file ut-DCI.cpp
  *
  * @brief DCI interface class implementation hardware unit test
  *

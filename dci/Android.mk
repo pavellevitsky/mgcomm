@@ -9,9 +9,9 @@ LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
 my_includes:= \
-	$(LOCAL_PATH)/../include \
-	$(LOCAL_PATH)/../include/dci/include \
-	$(LOCAL_PATH)/../include/dci/src
+        $(LOCAL_PATH)/../include \
+        $(LOCAL_PATH)/../include/dci/include \
+        $(LOCAL_PATH)/../include/dci/src
 
 LOCAL_C_INCLUDES := $(my_includes)
 LOCAL_C_INCLUDES += $(TARGET_OUT_HEADERS)/common/inc

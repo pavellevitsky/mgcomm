@@ -21,8 +21,8 @@ TcpServer::TcpServer(int port):
     terminate_(false)
 {
     // Open port for listening
-    
     sockfd_ = socket(AF_INET, SOCK_STREAM, 0);
+
     if(sockfd_ < 0) {
         perror("TcpServer: ");
         throw;     // TODO specify
@@ -119,7 +119,7 @@ int TcpServer::accept_()
     if(-1 == new_fd) // Accept failed
         perror("TcpServer accept: ");
     else
-        std::cout << "\n\tAccepted incoming connecton: " << clientfd_ << std::flush;
+        std::cout << "\nAccepted incoming connecton: " << clientfd_ << std::flush;
 
     return new_fd;
 }
@@ -142,11 +142,12 @@ void TcpServer::process_buf(ssize_t scnt)
     static bool eol_flag = false;
     
     int start_of_chunk = 0;    // Index char for current sentence chunk
+
     for(int i = 0; i < scnt; ++i) {
         if(rcv_buf[i] == '\n')
             if(eol_flag) // Found termination
             {
-                std::cout << "\n\tFound termination at: " << i << std::flush;
+                std::cout << " Found termination at: " << i << std::flush;
                 // Append the end of sentence, excluding '\n'
                 if(i > start_of_chunk + 1)    // there is something besides termination
                     keeped_.append(rcv_buf + start_of_chunk, i - start_of_chunk - 1);
@@ -163,11 +164,12 @@ void TcpServer::process_buf(ssize_t scnt)
         else
             eol_flag = false;
     }
+
     // Check if something rest in input buffer
     if(start_of_chunk < scnt) {
-        std::cout << "\n\tAppending the rest" << std::flush;
+        std::cout << " Appending the rest" << std::flush;
         keeped_.append(rcv_buf + start_of_chunk, scnt - start_of_chunk);
-        std::cout << " now keeped_ is: [" << keeped_ << ']' << std::flush;
+        std::cout << " | keeped_: " << keeped_ << std::flush;
     }
 }
 
@@ -182,6 +184,7 @@ int TcpServer::receive_()
 {
     // recv() returns 0 on disconnect, <0 on error
     ssize_t scnt = recv(clientfd_, rcv_buf, sizeof(rcv_buf), 0);
+
     if(scnt <= 0) {
         // Connection closed
         std::cout << '\n' << __PRETTY_FUNCTION__ << ": Client connection closed" << std::flush;
@@ -190,7 +193,7 @@ int TcpServer::receive_()
         return scnt;
     }
 
-    std::cout << '\n' << __PRETTY_FUNCTION__ << ": Received " << scnt << " byte";
+    std::cout << '\n' << __PRETTY_FUNCTION__ << ": Received " << scnt << " bytes : ";
 
     dump(rcv_buf, scnt);
 
@@ -205,7 +208,7 @@ int TcpServer::writeline(const char *pc)
     // Write line to socket
     size_t len = strlen(pc);
     int cnt = send(clientfd_, pc, len, 0);
-    if(cnt != len) {
+    if(cnt != (int)len) {
         std::cout << '\n' << __PRETTY_FUNCTION__ << ": Error writing line: " << pc;
         return 1;
     }

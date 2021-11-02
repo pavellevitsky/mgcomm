@@ -1,5 +1,5 @@
 /*!
- * @file unittest-Parser.cpp
+ * @file ut-Parser.cpp
  *
  * @brief Unit test for Parser class.
  *

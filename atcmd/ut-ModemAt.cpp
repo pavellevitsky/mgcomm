@@ -1,5 +1,5 @@
 /*!
- * @file unittest-ModemAt.cpp
+ * @file ut-ModemAt.cpp
  *
  * @brief Modem AT Commands I/O unit test (example)
  *

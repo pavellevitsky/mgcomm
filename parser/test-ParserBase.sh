@@ -1,3 +1,5 @@
 #!/bin/bash
 
-make unittest-ParserBase && ./unittest-ParserBase && rm unittest-ParserBase
+make ut-ParserBase
+./ut-ParserBase
+rm ut-ParserBase
