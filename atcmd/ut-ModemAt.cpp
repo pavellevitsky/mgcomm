@@ -52,7 +52,7 @@ int main(int argc, char ** argv)
     }
     else
     {
-        std::string commands[] = {"I", "+CGMI", "+CGMM", "+CGSN", "+CFUN?"};
+        std::string commands[] = {"I", "+CGMI", "+CGMM", "+CGSN", "+CFUN?", "$MGPHYCFG=1"};
 
         for(auto cmd: commands)
         {

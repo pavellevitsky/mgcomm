@@ -147,9 +147,9 @@ do
   echo '**  2  Show modem FW version                        **'
   echo '**  3  Show IMSI slot 1                             **'
   echo '**  4  Show IMSI slot 2                             **'
-  echo '**  5  Switch to LTE pref mode                      **'
-  echo '**  6  Switch to WCDMA pref mode                    **'
-  echo '**  7  Switch to GSM pref mode                      **'
+  echo '**  5  Set GSM preffered network type               **'
+  echo '**  6  Set WCDMA preffered network type             **'
+  echo '**  7  Set LTE preffered network type               **'
   echo '**  8  Trigger power scan                           **'
   echo '**  9  Camp on LTE cell (switch to LTE before)      **'
   echo '**  $  AT$MGPHYCFG (UL transmission configuration)  **'
@@ -163,9 +163,9 @@ do
     2) adb shell "read_diag --req GET_VERSION";;
     3) adb shell "read_diag --req GET_IMSI:1";;
     4) adb shell "read_diag --req GET_IMSI:2";;
-    5) adb shell "read_diag --req RAT_SEL:3; sleep 2";;
+    5) adb shell "read_diag --req RAT_SEL:1; sleep 2";;
     6) adb shell "read_diag --req RAT_SEL:2; sleep 2";;
-    7) adb shell "read_diag --req RAT_SEL:1; sleep 2";;
+    7) adb shell "read_diag --req RAT_SEL:3; sleep 2";;
     8) adb shell "read_diag --req SCAN";;
     9) camp_lte_cell;;
     $) at_mg_phy_cfg;;

@@ -3,3 +3,4 @@ i
 +cgmm
 +cgsn
 +cfun?
+$MGPHYCFG=1
