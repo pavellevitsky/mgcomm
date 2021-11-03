@@ -16,38 +16,82 @@
 
 int main(int argc, char ** argv)
 {
-    bool debug = false;
+    bool is_debug = false;
+    bool is_file = false;
+    bool is_command = false;
+    std::string str_command;
 
-    if(argc > 1 && argv[1][0] == '-' && argv[1][1] == 'd')
+    if (argc == 1)
     {
-        debug = true;
+        std::cout << "USAGE : [-d | -f] [-c AT$MGPHYCFG=param1,param2,...]\n";
+    }
+    else if (argc == 2)
+    {
+        if (argv[1][0] == '-' && argv[1][1] == 'd')
+        {
+            is_debug = true;
+        }
+        if (argv[1][0] == '-' && argv[1][1] == 'f')
+        {
+            is_file = true;
+        }
+    }
+    else if (argc == 3)
+    {
+        if (argv[1][0] == '-' && argv[1][1] == 'c')
+        {
+            is_command = true;
+            str_command.assign(argv[2]);
+        }
+    }
+    else if (argc == 4)
+    {
+        if (argv[1][0] == '-' && argv[1][1] == 'd')
+        {
+            is_debug = true;
+        }
+        if (argv[2][0] == '-' && argv[2][1] == 'c')
+        {
+            is_command = true;
+            str_command.assign(argv[3]);
+        }
     }
 
-    ModemAt modem("/dev/smd11", debug);
+    ModemAt modem("/dev/smd11", is_debug);
 
     auto response = modem.at_cmd("");
     std::cout << "Response: " << response << "\n";
     std::cout << "--------------------------------------------\n";
 
-    // AT command test sequence from file
-    std::ifstream at_infile("/data/local/tmp/at-commands-list.txt");
-
-    if(at_infile)
+    if (is_command)
     {
-        std::cout << "Read AT Commands from at-commands-list.txt\n";
-        std::string line;
+        std::cout << "\n--------------------------------------------\n";
+        std::cout << "AT" << str_command.c_str() << "\n";
+        response = modem.at_cmd(str_command.c_str());
+        std::cout << response;
+    }
+    else if (is_file)
+    {
+        // AT command test sequence from file
+        std::ifstream at_infile("/data/local/tmp/at-commands-list.txt");
 
-        while (std::getline(at_infile, line))
+        if (at_infile)
         {
-            if(line.length() > 0)
+            std::cout << "Read AT Commands from at-commands-list.txt\n";
+            std::string line;
+
+            while (std::getline(at_infile, line))
             {
-                std::cout << "\n--------------------------------------------\n";
-                std::cout << "AT" << line << "\n";
-                response = modem.at_cmd(line);
-                std::cout << response;
+                if(line.length() > 0)
+                {
+                    std::cout << "\n--------------------------------------------\n";
+                    std::cout << "AT" << line << "\n";
+                    response = modem.at_cmd(line);
+                    std::cout << response;
+                }
             }
+            at_infile.close();
         }
-        at_infile.close();
     }
     else
     {

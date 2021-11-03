@@ -16,11 +16,12 @@ camp_lte_cell()
   echo "read_diag --req CAMP_LTE:$earfcn,$pci"
   adb shell "read_diag --req CAMP_LTE:$earfcn,$pci"
 
-  sleep 5
+  echo
+  read -p "Press ENTER to continue ..."
 }
 
 
-send_at_mg_phy_cfg()
+send_at_mgphycfg()
 {
   echo '******************************************************************************************'
   echo '** AT$MGPHYCFG command parameters                                                       **'
@@ -30,8 +31,8 @@ send_at_mg_phy_cfg()
   echo '**  1  start           start/stop configuration           0:stop 1:start                **'
   echo '**  2  ncell_id        physical layer cell identify       0..503                        **'
   echo '**  3  n_rnti          radio network temporary identifier 0..65536                      **'
-  echo '**  4  delta_ss                                           0..29                         **'
-  echo '**  5  cyclic_shift                                       0..7                          **'
+  echo '**  4  delta_ss        delta sequence-shift pattern       0..29                         **'
+  echo '**  5  cyclic_shift    intended for DMRS field            0..7                          **'
   echo '**  6  nS              subframe id                        1..10                         **'
   echo '**  7  modu            modulation mapper                  0:BPSK 1:QPSK 2:QAM16 3:QAM64 **'
   echo '**  8  n_cp_l          cyclic prefix length               0:normal 1:extended           **'
@@ -55,35 +56,33 @@ send_at_mg_phy_cfg()
 
   echo "Set required parameters only. Leave default values for others."
   echo
-  read -e -i "$start"           -p "Enter start            " input
+  read -e -i "$start"           -p "start            " input
   start="${input:-$start}"
-  read -e -i "$ncell_id"        -p "Enter ncell_id         " input
+  read -e -i "$ncell_id"        -p "ncell_id         " input
   ncell_id="${input:-$ncell_id}"
-  read -e -i "$n_rnti"          -p "Enter n_rnti           " input
+  read -e -i "$n_rnti"          -p "n_rnti           " input
   n_rnti="${input:-$n_rnti}"
-  read -e -i "$delta_ss"        -p "Enter delta_ss         " input
+  read -e -i "$delta_ss"        -p "delta_ss         " input
   delta_ss="${input:-$delta_ss}"
-  read -e -i "$cyclic_shift"    -p "Enter cyclic_shift     " input
+  read -e -i "$cyclic_shift"    -p "cyclic_shift     " input
   cyclic_shift="${input:-$cyclic_shift}"
-  read -e -i "$nS"              -p "Enter nS               " input
+  read -e -i "$nS"              -p "nS               " input
   nS="${input:-$nS}"
-  read -e -i "$modu"            -p "Enter modu             " input
+  read -e -i "$modu"            -p "modu             " input
   modu="${input:-$modu}"
-  read -e -i "$n_cp_l"          -p "Enter n_cp_l           " input
+  read -e -i "$n_cp_l"          -p "n_cp_l           " input
   n_cp_l="${input:-$n_cp_l}"
-  read -e -i "$group_hop"       -p "Enter group_hop        " input
+  read -e -i "$group_hop"       -p "group_hop        " input
   group_hop="${input:-$group_hop}"
-  read -e -i "$group_assing"    -p "Enter group_assing     " input
+  read -e -i "$group_assing"    -p "group_assing     " input
   group_assing="${input:-$group_assing}"
-  read -e -i "$seq_hop_enabled" -p "Enter seq_hop_enabled  " input
+  read -e -i "$seq_hop_enabled" -p "seq_hop_enabled  " input
   seq_hop_enabled="${input:-$seq_hop_enabled}"
 
   echo
   echo "\$MGPHYCFG=$start,$ncell_id,$n_rnti,$delta_ss,$cyclic_shift,$nS,$modu,$n_cp_l,$group_hop,$group_assing,$seq_hop_enabled"
   echo
-
   adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG=$start,$ncell_id,$n_rnti,$delta_ss,$cyclic_shift,$nS,$modu,$n_cp_l,$group_hop,$group_assing,$seq_hop_enabled'"
-
   echo
   read -p "Press ENTER to continue ..."
 }
@@ -152,9 +151,9 @@ do
   echo '** ------------------------------------------------ **'
   echo '**  UL transmission configuration                   **'
   echo '** ------------------------------------------------ **'
-  echo '**  A Show valid AT$MGPHYCFG parameters range       **'
-  echo '**  B Read current parameters values                **'
-  echo '**  C Send AT$MGPHYCFG with modified values         **'
+  echo '**  A  Show valid AT$MGPHYCFG parameters range      **'
+  echo '**  B  Read current parameters values               **'
+  echo '**  C  Send AT$MGPHYCFG with modified values        **'
   echo '******************************************************'
 
   read -p "$device_name | select operation : " option
@@ -170,9 +169,15 @@ do
     7) adb shell "read_diag --req RAT_SEL:3; sleep 2";;
     8) adb shell "read_diag --req SCAN";;
     9) camp_lte_cell;;
-    A) adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG?'";;
-    B) adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG=?'";;
-    C) send_at_mg_phy_cfg;;
+    A)
+       adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG=?'"
+       read -p "Press ENTER to continue ..."
+       ;;
+    B)
+       adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG?'"
+       read -p "Press ENTER to continue ..."
+       ;;
+    C) send_at_mgphycfg;;
     *) echo Select 0..9 or $;;
   esac
 
@@ -180,5 +185,3 @@ do
 done
 
 exit 0
-
-  adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG=$start,$ncell_id,$n_rnti,$delta_ss,$cyclic_shift,$nS,$modu,$n_cp_l,$group_hop,$group_assing,$seq_hop_enabled'"
