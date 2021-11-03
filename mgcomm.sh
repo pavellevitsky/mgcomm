@@ -104,8 +104,15 @@ then
   exit 1
 fi
 
+at_cmd_enabled=`adb shell ls -l /data/local/tmp/ut-ModemAt | grep "No such file or directory" | wc -l`
+
+if [[ $at_cmd_enabled != 0 ]]
+then
+  echo ut-ModemAt is missing @ /data/local/tmp 
+  exit 1
+fi
+
 dci_count=`adb shell ps /system/bin/dciscan | wc -l`
-webs_count=`adb shell ps ./webs | wc -l`
 
 if [[ $dci_count != 2 ]]
 then
@@ -115,6 +122,8 @@ then
   adb shell dciscan server > /dev/null &
   sleep 10
 fi
+
+webs_count=`adb shell ps ./webs | wc -l`
 
 if [[ $webs_count != 2 ]]
 then

@@ -7,7 +7,9 @@
  *
  * How to use: just run.
  * Optionally place a few commands to ./at-commands-list.txt
- * Optional argument 'd' enables dumps
+ * Optional argument '-f' enables reading commands from above file
+ * Optional argument '-c command' writes it to Unix device
+ * Optional argument '-d' enables dumps
  */
 
 #include <iostream>
