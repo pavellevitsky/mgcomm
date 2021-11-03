@@ -20,16 +20,11 @@ camp_lte_cell()
 }
 
 
-at_mg_phy_cfg()
+send_at_mg_phy_cfg()
 {
   echo '******************************************************************************************'
-  echo '** AT$MGPHYCFG command format                                                           **'
+  echo '** AT$MGPHYCFG command parameters                                                       **'
   echo '******************************************************************************************'
-  echo '** AT$MGPHYCFG=param1, or                                                               **'
-  echo '** AT$MGPHYCFG=param1,param2 or                                                         **'
-  echo '** AT$MGPHYCFG=param1,param2,param3,...,param11                                         **'
-  echo '** ------------------------------------------------------------------------------------ **'
-  echo '** Parameters list                                                                      **'
   echo '** id  name            description                        values                        **'
   echo '** --  --------------- ---------------------------------- ----------------------------- **'
   echo '**  1  start           start/stop configuration           0:stop 1:start                **'
@@ -43,8 +38,6 @@ at_mg_phy_cfg()
   echo '**  9  group_hop       group hopping state                0:disable 1:enable            **'
   echo '** 10  group_assing    group assignment                   0..29                         **'
   echo '** 11  seq_hop_enabled sequence hopping state             0:disable 1:enable            **'
-  echo '** ------------------------------------------------------------------------------------ **'
-  echo '**  0  exit from this menu                                                              **'
   echo '******************************************************************************************'
   echo
 
@@ -85,10 +78,14 @@ at_mg_phy_cfg()
   read -e -i "$seq_hop_enabled" -p "Enter seq_hop_enabled  " input
   seq_hop_enabled="${input:-$seq_hop_enabled}"
 
-  echo "AT\$MGPHYCFG=$start,$ncell_id,$n_rnti,$delta_ss,$cyclic_shift,$nS,$modu,$n_cp_l,$group_hop,$group_assing,$seq_hop_enabled"
- # adb shell "AT\$MGPHYCFG=$start,$ncell_id,$n_rnti,$delta_ss,$cyclic_shift,$nS,$modu,$n_cp_l,$group_hop,$group_assing,$seq_hop_enabled"
+  echo
+  echo "\$MGPHYCFG=$start,$ncell_id,$n_rnti,$delta_ss,$cyclic_shift,$nS,$modu,$n_cp_l,$group_hop,$group_assing,$seq_hop_enabled"
+  echo
 
-  sleep 5
+  adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG=$start,$ncell_id,$n_rnti,$delta_ss,$cyclic_shift,$nS,$modu,$n_cp_l,$group_hop,$group_assing,$seq_hop_enabled'"
+
+  echo
+  read -p "Press ENTER to continue ..."
 }
 
 
@@ -141,7 +138,7 @@ do
 
   echo '******************************************************'
   echo '**               Welcome to MGComm                  **'
-  echo '******************************************************'
+  echo '** ------------------------------------------------ **'
   echo '**  0  Exit                                         **'
   echo '**  1  Reset device                                 **'
   echo '**  2  Show modem FW version                        **'
@@ -152,7 +149,12 @@ do
   echo '**  7  Set LTE preffered network type               **'
   echo '**  8  Trigger power scan                           **'
   echo '**  9  Camp on LTE cell (switch to LTE before)      **'
-  echo '**  $  AT$MGPHYCFG (UL transmission configuration)  **'
+  echo '** ------------------------------------------------ **'
+  echo '**  UL transmission configuration                   **'
+  echo '** ------------------------------------------------ **'
+  echo '**  A Show valid AT$MGPHYCFG parameters range       **'
+  echo '**  B Read current parameters values                **'
+  echo '**  C Send AT$MGPHYCFG with modified values         **'
   echo '******************************************************'
 
   read -p "$device_name | select operation : " option
@@ -168,7 +170,9 @@ do
     7) adb shell "read_diag --req RAT_SEL:3; sleep 2";;
     8) adb shell "read_diag --req SCAN";;
     9) camp_lte_cell;;
-    $) at_mg_phy_cfg;;
+    A) adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG?'";;
+    B) adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG=?'";;
+    C) send_at_mg_phy_cfg;;
     *) echo Select 0..9 or $;;
   esac
 
@@ -176,3 +180,5 @@ do
 done
 
 exit 0
+
+  adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG=$start,$ncell_id,$n_rnti,$delta_ss,$cyclic_shift,$nS,$modu,$n_cp_l,$group_hop,$group_assing,$seq_hop_enabled'"

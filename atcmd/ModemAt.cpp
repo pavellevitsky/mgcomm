@@ -65,7 +65,7 @@ ModemAt::~ModemAt()
     if(fd_ > 0)
     {
         // Enable echo
-        std::cout << "-----------------------------------\n";
+        std::cout << "\n--------------------------------------------\n";
         std::cout << "ModemAt cleanup\r\n";
         write_("E1;V1");
         read_();
@@ -97,7 +97,7 @@ std::string ModemAt::read_(unsigned timeout)
             result += buf;
 
             if(debug_) {
-                printf("READ %d bytes\r\n", cnt);
+                std::cout << "READ " << cnt << " bytes: ";
                 dump(buf, cnt);
             }
 
@@ -126,7 +126,7 @@ std::string ModemAt::read_(unsigned timeout)
 
     if(debug_)
     {
-        std::cout << "\r\nread_() finished, length:" << result.length() << "\n";
+        std::cout << "\nREAD finished, length:" << result.length();
     }
 
     return result;
@@ -137,7 +137,7 @@ void ModemAt::write_(const std::string command)
     std::string full_cmd = "AT" + command + "\r\n";
 
     if(debug_)
-        std::cout << "WRITE " << full_cmd;
+        std::cout << "\nWRITE " << full_cmd;
 
     size_t written = write(fd_, full_cmd.c_str(), full_cmd.size());
 

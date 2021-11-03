@@ -19,15 +19,15 @@ int main(int argc, char ** argv)
     bool debug = false;
 
     if(argc > 1 && argv[1][0] == '-' && argv[1][1] == 'd')
+    {
         debug = true;
-    else
-        printf("Use -d to see debug\n");
+    }
 
     ModemAt modem("/dev/smd11", debug);
 
     auto response = modem.at_cmd("");
     std::cout << "Response: " << response << "\n";
-    std::cout << "-----------------------------------\n";
+    std::cout << "--------------------------------------------\n";
 
     // AT command test sequence from file
     std::ifstream at_infile("/data/local/tmp/at-commands-list.txt");
@@ -41,7 +41,7 @@ int main(int argc, char ** argv)
         {
             if(line.length() > 0)
             {
-                std::cout << "-----------------------------------\n";
+                std::cout << "\n--------------------------------------------\n";
                 std::cout << "AT" << line << "\n";
                 response = modem.at_cmd(line);
                 std::cout << response;
@@ -56,7 +56,7 @@ int main(int argc, char ** argv)
 
         for(auto cmd: commands)
         {
-            std::cout << "-----------------------------------\n";
+            std::cout << "\n--------------------------------------------\n";
             std::cout << std::string("AT") + cmd;
             response = modem.at_cmd(cmd);
             std::cout << response;
