@@ -52,7 +52,7 @@ ModemAt::ModemAt(const char *device_name, bool debug)
     write_("");
 
     // Flush input
-    std::cout << "Flashing input\n";
+    std::cout << "Flashing input\r\n";
     read_();
 
     // Disable echo
@@ -65,7 +65,8 @@ ModemAt::~ModemAt()
     if(fd_ > 0)
     {
         // Enable echo
-        std::cout << "\nModemAt cleanup";
+        std::cout << "-----------------------------------\n";
+        std::cout << "ModemAt cleanup\r\n";
         write_("E1;V1");
         read_();
     }
@@ -85,6 +86,7 @@ std::string ModemAt::read_(unsigned timeout)
 
     // Read until second \r
     unsigned tenth = timeout * 10;    // in 1/10 s
+
     do
     {
         int cnt = read(fd_, buf, bufsize-1);    // 1 byte for termination
@@ -95,17 +97,17 @@ std::string ModemAt::read_(unsigned timeout)
             result += buf;
 
             if(debug_) {
-                printf("\n\tread: %d bytes", cnt);
+                printf("READ %d bytes\r\n", cnt);
                 dump(buf, cnt);
             }
 
             // Check for termination. Note: bad performance!
-            size_t pos =  result.find("\r\nOK\r\n");
+            size_t pos = result.find("\r\nOK\r\n");
 
             if(pos != std::string::npos)
             {
                 if(debug_)
-                    std::cout << "\nFOUND OK at " << pos;
+                    std::cout << "FOUND OK @ " << pos;
                 break;
             }
 
@@ -114,7 +116,7 @@ std::string ModemAt::read_(unsigned timeout)
             if(pos != std::string::npos)
             {
                 if(debug_)
-                    std::cout << "\nFOUND ERROR at " << pos;
+                    std::cout << "FOUND ERROR @ " << pos;
                 break;
             }
         }
@@ -123,17 +125,19 @@ std::string ModemAt::read_(unsigned timeout)
     } while(tenth--);
 
     if(debug_)
-        std::cout << "\nread_() finished, length:" << result.length();
+    {
+        std::cout << "\r\nread_() finished, length:" << result.length() << "\n";
+    }
 
     return result;
 }
 
 void ModemAt::write_(const std::string command)
 {
-    std::string full_cmd = "AT" + command + "\r";
+    std::string full_cmd = "AT" + command + "\r\n";
 
     if(debug_)
-        std::cout << "\nwrite_(): Sending command: " << full_cmd;
+        std::cout << "WRITE " << full_cmd;
 
     size_t written = write(fd_, full_cmd.c_str(), full_cmd.size());
 

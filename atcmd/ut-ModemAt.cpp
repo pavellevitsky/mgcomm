@@ -18,8 +18,6 @@ int main(int argc, char ** argv)
 {
     bool debug = false;
 
-    printf("***** AT Command test ******\n");
-
     if(argc > 1 && argv[1][0] == '-' && argv[1][1] == 'd')
         debug = true;
     else
@@ -28,10 +26,11 @@ int main(int argc, char ** argv)
     ModemAt modem("/dev/smd11", debug);
 
     auto response = modem.at_cmd("");
-    std::cout << "Response:" << response;
+    std::cout << "Response: " << response << "\n";
+    std::cout << "-----------------------------------\n";
 
     // AT command test sequence from file
-    std::ifstream at_infile("./at-commands-list.txt");
+    std::ifstream at_infile("/data/local/tmp/at-commands-list.txt");
 
     if(at_infile)
     {
@@ -42,21 +41,23 @@ int main(int argc, char ** argv)
         {
             if(line.length() > 0)
             {
-                std::cout << "Execute command AT" << line;
+                std::cout << "-----------------------------------\n";
+                std::cout << "AT" << line << "\n";
                 response = modem.at_cmd(line);
                 std::cout << response;
-                std::cout << "\n";
             }
         }
         at_infile.close();
     }
     else
     {
-        std::string commands[] = {"I", "+CGMI", "+CGMM", "+CGSN", "+CFUN?", "$MGPHYCFG=1"};
+        std::string commands[] = {"+CGMI", "+CGSN", "+CFUN?", "$MGPHYCFG=1"};
+        std::cout << "Read AT Commands from hard-coded list\n";
 
         for(auto cmd: commands)
         {
-            std::cout << std::string("AT") + cmd << "\n";
+            std::cout << "-----------------------------------\n";
+            std::cout << std::string("AT") + cmd;
             response = modem.at_cmd(cmd);
             std::cout << response;
         }
