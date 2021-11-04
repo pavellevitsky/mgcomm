@@ -1,6 +1,2 @@
-i
 +cgmi
-+cgmm
-+cgsn
 +cfun?
-$MGPHYCFG=1
