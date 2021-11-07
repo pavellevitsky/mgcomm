@@ -97,7 +97,7 @@ int main(int argc, char ** argv)
     }
     else
     {
-        std::string commands[] = {"+CGMI", "+CFUN?"};
+        std::string commands[] = {"+CGMI", "+CFUN?", "$MGPHYCFG?", "$MGPHYCFG=1"};
         std::cout << "Read AT Commands from hard-coded list\n";
 
         for(auto cmd: commands)

@@ -1,2 +1,4 @@
 +cgmi
 +cfun?
+$MGPHYCFG?
+$MGPHYCFG=1
