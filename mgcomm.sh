@@ -104,37 +104,46 @@ then
   exit 1
 fi
 
+dciscan_enabled=`adb shell ls -l /system/bin/dciscan | grep "No such file or directory" | wc -l`
+webs_enabled=`adb shell ls -l /data/local/tmp/webs | grep "No such file or directory" | wc -l`
 at_cmd_enabled=`adb shell ls -l /data/local/tmp/ut-ModemAt | grep "No such file or directory" | wc -l`
 
-if [[ $at_cmd_enabled != 0 ]]
+if [[ $dciscan_enabled != 0 || $webs_enabled != 0 || $at_cmd_enabled != 0 ]]
 then
-  echo ut-ModemAt is missing @ /data/local/tmp 
+  echo One of below required components is missing:
+  echo "- dciscan    @ /system/bin/"
+  echo "- webs       @ /data/local/tmp/"
+  echo "- ut-ModemAt @ /data/local/tmp/"
   exit 1
 fi
 
-dci_count=`adb shell ps /system/bin/dciscan | wc -l`
+dci_count_1=`adb shell ps dciscan | wc -l`
+dci_count_2=`adb shell ps /system/bin/./dciscan | wc -l`
 
-if [[ $dci_count != 2 ]]
+if [[ $dci_count_1 == 2 || $dci_count_2 == 2 ]]
 then
+  echo DCI Server is running
+else
   echo DCI Server is not running
-  sleep 2
-  echo Start DCI Server
-  adb shell dciscan server > /dev/null &
+  adb shell /system/bin/./dciscan server > /dev/null &
+  echo Starting DCI Server and waiting 10 sec
   sleep 10
 fi
 
 webs_count=`adb shell ps ./webs | wc -l`
 
-if [[ $webs_count != 2 ]]
+if [[ $webs_count == 2 ]]
 then
-  echo Start Web Server 
+  echo Web Server is running
+else
+  echo Starting Web Server 
   adb shell "cd /data/local/tmp; ./webs > /dev/null" &
   adb forward tcp:3000 tcp:3000
 fi
 
 sleep 2
 echo Start Browser
-#sensible-browser http://127.0.0.1:3000/ &
+sensible-browser http://127.0.0.1:3000/ &
 
 stay_in_loop=true
 
@@ -170,13 +179,13 @@ do
   case $option in
     0) stay_in_loop=false;;
     1) adb reboot;;
-    2) adb shell "read_diag --req GET_VERSION";;
-    3) adb shell "read_diag --req GET_IMSI:1";;
-    4) adb shell "read_diag --req GET_IMSI:2";;
+    2) adb shell "read_diag --req GET_VERSION; sleep 2";;
+    3) adb shell "read_diag --req GET_IMSI:1; sleep 2";;
+    4) adb shell "read_diag --req GET_IMSI:2; sleep 2";;
     5) adb shell "read_diag --req RAT_SEL:1; sleep 2";;
     6) adb shell "read_diag --req RAT_SEL:2; sleep 2";;
     7) adb shell "read_diag --req RAT_SEL:3; sleep 2";;
-    8) adb shell "read_diag --req SCAN";;
+    8) adb shell "read_diag --req SCAN; sleep 2";;
     9) camp_lte_cell;;
     A)
        adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG=?'"
