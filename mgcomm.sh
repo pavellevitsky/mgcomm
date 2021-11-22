@@ -34,11 +34,8 @@ send_at_mgphycfg()
   echo '**  4  delta_ss        delta sequence-shift pattern       0..29                         **'
   echo '**  5  cyclic_shift    intended for DMRS field            0..7                          **'
   echo '**  6  nS              subframe id                        1..10                         **'
-  echo '**  7  modu            modulation mapper                  0:BPSK 1:QPSK 2:QAM16 3:QAM64 **'
-  echo '**  8  n_cp_l          cyclic prefix length               0:normal 1:extended           **'
-  echo '**  9  group_hop       group hopping state                0:disable 1:enable            **'
-  echo '** 10  group_assing    group assignment                   0..29                         **'
-  echo '** 11  seq_hop_enabled sequence hopping state             0:disable 1:enable            **'
+  echo '**  7  n_cp_l          cyclic prefix length               0:normal 1:extended           **'
+  echo '**  8  group_assing    group assignment                   0..29                         **'
   echo '******************************************************************************************'
   echo
 
@@ -48,11 +45,8 @@ send_at_mgphycfg()
   delta_ss=0
   cyclic_shift=0
   nS=1
-  modu=0
   n_cp_l=0
-  group_hop=0
   group_assing=0
-  seq_hop_enabled=0
 
   echo "Set required parameters only. Leave default values for others."
   echo
@@ -68,21 +62,15 @@ send_at_mgphycfg()
   cyclic_shift="${input:-$cyclic_shift}"
   read -e -i "$nS"              -p "nS               " input
   nS="${input:-$nS}"
-  read -e -i "$modu"            -p "modu             " input
-  modu="${input:-$modu}"
   read -e -i "$n_cp_l"          -p "n_cp_l           " input
   n_cp_l="${input:-$n_cp_l}"
-  read -e -i "$group_hop"       -p "group_hop        " input
-  group_hop="${input:-$group_hop}"
   read -e -i "$group_assing"    -p "group_assing     " input
   group_assing="${input:-$group_assing}"
-  read -e -i "$seq_hop_enabled" -p "seq_hop_enabled  " input
-  seq_hop_enabled="${input:-$seq_hop_enabled}"
 
   echo
-  echo "\$MGPHYCFG=$start,$ncell_id,$n_rnti,$delta_ss,$cyclic_shift,$nS,$modu,$n_cp_l,$group_hop,$group_assing,$seq_hop_enabled"
+  echo "\$MGPHYCFG=$start,$ncell_id,$n_rnti,$delta_ss,$cyclic_shift,$nS,$n_cp_l,$group_assing"
   echo
-  adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG=$start,$ncell_id,$n_rnti,$delta_ss,$cyclic_shift,$nS,$modu,$n_cp_l,$group_hop,$group_assing,$seq_hop_enabled'"
+  adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG=$start,$ncell_id,$n_rnti,$delta_ss,$cyclic_shift,$nS,$n_cp_l,$group_assing"
   echo
   read -p "Press ENTER to continue ..."
 }
