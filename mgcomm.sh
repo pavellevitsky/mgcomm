@@ -113,7 +113,8 @@ do
     B) adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG?'"
        read -p "Press ENTER to continue ..."
        ;;
-    C) send_at_mgphycfg;;
+    C) send_at_mgphycfg
+       ;;
     *) echo Valid options are : 0, 1, A, B or C
        read -p "Press ENTER to continue ..."
        ;;

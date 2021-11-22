@@ -27,10 +27,7 @@ AT$MGPHYCFG menu
 **  4  delta_ss        delta sequence-shift pattern       0..29                         **
 **  5  cyclic_shift    intended for DMRS field            0..7                          **
 **  6  nS              subframe id                        1..10                         **
-**  7  modu            modulation mapper                  0:BPSK 1:QPSK 2:QAM16 3:QAM64 **
-**  8  n_cp_l          cyclic prefix length               0:normal 1:extended           **
-**  9  group_hop       group hopping state                0:disable 1:enable            **
-** 10  group_assing    group assignment                   0..29                         **
-** 11  seq_hop_enabled sequence hopping state             0:disable 1:enable            **
+**  7  n_cp_l          cyclic prefix length               0:normal 1:extended           **
+**  8  group_assing    group assignment                   0..29                         **
 ******************************************************************************************
 ```
