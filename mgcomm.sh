@@ -103,18 +103,20 @@ do
   read -p "$device_name | select operation : " option
 
   case $option in
-    0) stay_in_loop=false;;
-    1) adb reboot;;
-    A)
-       adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG=?'"
+    0) stay_in_loop=false
+       ;;
+    1) adb reboot
+       ;;
+    A) adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG=?'"
        read -p "Press ENTER to continue ..."
        ;;
-    B)
-       adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG?'"
+    B) adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG?'"
        read -p "Press ENTER to continue ..."
        ;;
     C) send_at_mgphycfg;;
-    *) echo Select 0, 1, A, B or C;;
+    *) echo Valid options are : 0, 1, A, B or C
+       read -p "Press ENTER to continue ..."
+       ;;
   esac
 
 done
