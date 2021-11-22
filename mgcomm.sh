@@ -169,28 +169,41 @@ do
   read -p "$device_name | select operation : " option
 
   case $option in
-    0) stay_in_loop=false;;
-    1) adb reboot;;
-    2) adb shell "read_diag --req GET_VERSION; sleep 2";;
-    3) adb shell "read_diag --req GET_IMSI:1; sleep 2";;
-    4) adb shell "read_diag --req GET_IMSI:2; sleep 2";;
-    5) adb shell "read_diag --req RAT_SEL:1; sleep 2";;
-    6) adb shell "read_diag --req RAT_SEL:2; sleep 2";;
-    7) adb shell "read_diag --req RAT_SEL:3; sleep 2";;
-    8) adb shell "read_diag --req SCAN; sleep 2";;
-    9) camp_lte_cell;;
-    A)
-       adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG=?'"
+    0) stay_in_loop=false
+       ;;
+    1) adb reboot
+       ;;
+    2) adb shell "read_diag --req GET_VERSION; sleep 2"
+       ;;
+    3) adb shell "read_diag --req GET_IMSI:1; sleep 2"
+       ;;
+    4) adb shell "read_diag --req GET_IMSI:2; sleep 2"
+       ;;
+    5) adb shell "read_diag --req RAT_SEL:1; sleep 2"
+       ;;
+    6) adb shell "read_diag --req RAT_SEL:2; sleep 2"
+       ;;
+    7) adb shell "read_diag --req RAT_SEL:3; sleep 2"
+       ;;
+    8) adb shell "read_diag --req SCAN; sleep 2"
+       ;;
+    9) camp_lte_cell
+       ;;
+    A) adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG=?'"
        read -p "Press ENTER to continue ..."
        ;;
-    B)
-       adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG?'"
+    B) adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG?'"
        read -p "Press ENTER to continue ..."
        ;;
-    C) send_at_mgphycfg;;
-    N) x-terminal-emulator -e "adb shell 'read_diag --events 0 --msgs 0:0x0 --logs 0x4111,0x41AC,0xB031,0xB119,0xB197'";;
-    P) x-terminal-emulator -e "adb shell 'read_diag --events 0 --msgs 0:0x0 --logs 0xB0CB'";;
-    *) echo Select 0..9, A, B, C, N, P;;
+    C) send_at_mgphycfg
+       ;;
+    N) x-terminal-emulator -e "adb shell 'read_diag --events 0 --msgs 0:0x0 --logs 0x4111,0x41AC,0xB031,0xB119,0xB197'"
+       ;;
+    P) x-terminal-emulator -e "adb shell 'read_diag --events 0 --msgs 0:0x0 --logs 0xB0CB'"
+       ;;
+    *) echo Valid options are : 0..9, A, B, C, N, P
+       read -p "Press ENTER to continue ..."
+       ;;
   esac
 done
 
