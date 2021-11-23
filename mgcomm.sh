@@ -154,8 +154,11 @@ do
   echo '**  5  Set GSM preffered network type               **'
   echo '**  6  Set WCDMA preffered network type             **'
   echo '**  7  Set LTE preffered network type               **'
-  echo '**  8  Trigger power scan                           **'
-  echo '**  9  Camp on LTE cell (switch to LTE before)      **'
+  echo '**  8  Camp on LTE cell (switch to LTE before)      **'
+  echo '**  S  Trigger power scan (GSM+WCDMA+LTE)           **'
+  echo '**  G  Trigger power scan GSM                       **'
+  echo '**  W  Trigger power scan WCDMA                     **'
+  echo '**  L  Trigger power scan LTE                       **'
   echo '**  N  Show neighbour cells (WCDMA/LTE)             **'
   echo '**  P  Paging signals                               **'
   echo '** ------------------------------------------------ **'
@@ -185,9 +188,21 @@ do
        ;;
     7) adb shell "read_diag --req RAT_SEL:3; sleep 2"
        ;;
-    8) adb shell "read_diag --req SCAN; sleep 2"
+    8) camp_lte_cell
        ;;
-    9) camp_lte_cell
+    S) adb shell "read_diag --req SCAN:0; sleep 2"
+       ;;
+    G) adb shell "read_diag --req SCAN:1; sleep 2"
+       ;;
+    W) adb shell "read_diag --req SCAN:2; sleep 2"
+       ;;
+    L) adb shell "read_diag --req SCAN:3; sleep 2"
+       ;;
+    N) x-terminal-emulator -e "adb shell 'read_diag --events 0 --msgs 0:0x0 --logs 0x4111,0x41AC,0xB031,0xB119,0xB197'"
+       sleep 5
+       ;;
+    P) x-terminal-emulator -e "adb shell 'read_diag --events 0 --msgs 0:0x0 --logs 0xB0C0,0xB0CB'"
+       sleep 5
        ;;
     A) adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG=?'"
        read -p "Press ENTER to continue ..."
@@ -196,10 +211,6 @@ do
        read -p "Press ENTER to continue ..."
        ;;
     C) send_at_mgphycfg
-       ;;
-    N) x-terminal-emulator -e "adb shell 'read_diag --events 0 --msgs 0:0x0 --logs 0x4111,0x41AC,0xB031,0xB119,0xB197'"
-       ;;
-    P) x-terminal-emulator -e "adb shell 'read_diag --events 0 --msgs 0:0x0 --logs 0xB0CB'"
        ;;
     *) echo Valid options are : 0..9, A, B, C, N, P
        read -p "Press ENTER to continue ..."
