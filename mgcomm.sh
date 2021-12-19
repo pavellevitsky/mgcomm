@@ -31,18 +31,16 @@ send_at_mgphycfg()
   echo '**  1  start           start/stop configuration           0:stop 1:start                **'
   echo '**  2  ncell_id        physical layer cell identify       0..503                        **'
   echo '**  3  n_rnti          radio network temporary identifier 0..65536                      **'
-  echo '**  4  delta_ss        delta sequence-shift pattern       0..29                         **'
-  echo '**  5  cyclic_shift    intended for DMRS field            0..7                          **'
-  echo '**  6  nS              subframe id                        1..10                         **'
-  echo '**  7  n_cp_l          cyclic prefix length               0:normal 1:extended           **'
-  echo '**  8  group_assing    group assignment                   0..29                         **'
+  echo '**  4  cyclic_shift    intended for DMRS field            0..7                          **'
+  echo '**  5  nS              subframe id                        1..10                         **'
+  echo '**  6  n_cp_l          cyclic prefix length               0:normal 1:extended           **'
+  echo '**  7  group_assing    group assignment                   0..29                         **'
   echo '******************************************************************************************'
   echo
 
   start=0
   ncell_id=0
   n_rnti=0
-  delta_ss=0
   cyclic_shift=0
   nS=1
   n_cp_l=0
@@ -56,8 +54,6 @@ send_at_mgphycfg()
   ncell_id="${input:-$ncell_id}"
   read -e -i "$n_rnti"          -p "n_rnti           " input
   n_rnti="${input:-$n_rnti}"
-  read -e -i "$delta_ss"        -p "delta_ss         " input
-  delta_ss="${input:-$delta_ss}"
   read -e -i "$cyclic_shift"    -p "cyclic_shift     " input
   cyclic_shift="${input:-$cyclic_shift}"
   read -e -i "$nS"              -p "nS               " input
@@ -68,9 +64,9 @@ send_at_mgphycfg()
   group_assing="${input:-$group_assing}"
 
   echo
-  echo "\$MGPHYCFG=$start,$ncell_id,$n_rnti,$delta_ss,$cyclic_shift,$nS,$n_cp_l,$group_assing"
+  echo "\$MGPHYCFG=$start,$ncell_id,$n_rnti,$cyclic_shift,$nS,$n_cp_l,$group_assing"
   echo
-  adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG=$start,$ncell_id,$n_rnti,$delta_ss,$cyclic_shift,$nS,$n_cp_l,$group_assing"
+  adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG=$start,$ncell_id,$n_rnti,$cyclic_shift,$nS,$n_cp_l,$group_assing"
   echo
   read -p "Press ENTER to continue ..."
 }
