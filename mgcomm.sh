@@ -45,7 +45,7 @@ send_at_mgphycfg()
   echo
   echo "\$MGPHYCFG=$start,$ncell_id,$n_rnti,$cyclic_shift,$nS,$n_cp_l,$group_assing"
   echo
-  adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG=$start,$ncell_id,$n_rnti,$cyclic_shift,$nS,$n_cp_l,$group_assing"
+  adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG=$start,$ncell_id,$n_rnti,$cyclic_shift,$nS,$n_cp_l,$group_assing'"
   echo
   read -p "Press ENTER to continue ..."
 }
