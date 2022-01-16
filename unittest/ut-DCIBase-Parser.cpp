@@ -8,7 +8,7 @@ template <typename V>
 void print_container_uint16(V v)
 {
     for (auto x: v)
-        printf(" 0x%.02hX", x);
+        printf("0x%.02hX ", x);
 }
 
 /*!

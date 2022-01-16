@@ -3,7 +3,7 @@
  *
  * @brief DCI interface class implementation hardware unit test
  *
- * @author	Roman Raisin (roman.raisin@gmail.com)
+ * @author Roman Raisin (roman.raisin@gmail.com)
  */
 
 #include <iostream>
@@ -17,72 +17,80 @@ bool exit_flag = false;
 
 void catch_sigint (int sig)
 {
-	(void) sig;
+    (void) sig;
 
-	std::cout << "\nSIGINT handled\n";
-	exit_flag = true;
+    std::cout << "\nSIGINT handled\n";
+    exit_flag = true;
 }
 
 template <typename V>
 void print_container_uint16(V v)
 {
-	for (auto x: v)
-		printf(" 0x%.02hX", x);
+    for (auto x: v)
+        printf("0x%.02hX ", x);
+    printf("\n");
 }
 
 class DCITest: public DCI
 {
-	virtual void _handle_log(unsigned char *ptr, int len) override
-	{
-		uint16_t log_code = *(uint16_t*)(ptr + 2);
-		printf("\nReceived log 0x%.04hX", log_code);
-		dump(ptr, len);
+    virtual void _handle_log(unsigned char *ptr, int len) override
+    {
+        uint16_t log_code = *(uint16_t*)(ptr + 2);
+        printf("[0x%.04hX]\n", log_code);
+        dump(ptr, len);
 
-		DCI::_handle_log(ptr, len);
-	};
+        DCI::_handle_log(ptr, len);
+    };
 };
 
-int main(int argc, char **argv)
+int main (int argc, char **argv)
 {
-	(void)argc;
-	(void)argv;
+    (void)argc;
+    (void)argv;
+    DCITest dci;
+    auto print_line = []{ std::cout <<"------------------------------------------------------\n"; };
 
-	std::cout << "\nDCI unit test (Qualcomm interface)\n";
+    std::cout << "******************************************************\n";
+    std::cout << "** DCI (Qualcomm Diag Consumer Interface) UNIT TEST **\n";
+    std::cout << "******************************************************\n";
 
-	// Setup a Ctrl-C handler
-	signal (SIGINT, catch_sigint);
+    // Setup a Ctrl-C handler
+    signal (SIGINT, catch_sigint);
 
-	{
-		DCITest dci;
-		dci.setup_interface();
+    dci.setup_interface();
 
-		auto print_line = []{ std::cout <<"___________________________________"; };
+    while(!exit_flag)
+    {
+        std::unordered_set<uint16_t> log_codes;
 
-		while(!exit_flag)
-		{
-			print_line();
-			std::unordered_set<uint16_t> log_codes { 0x5A71, 0x5A6C };
-			std::cout << "\nSetting logs to catch:";
-			print_container_uint16(log_codes);
-			dci.add_log_codes(log_codes);
+        print_line();
+        log_codes = { 0x512F, 0x5B2F, 0x5A64, 0x5A70 };
+        std::cout << "Set GSM logs -> ";
+        print_container_uint16(log_codes);
+        dci.set_log_codes(log_codes);
+        sleep(10);
 
-			sleep(10);
+        print_line();
+        log_codes = { 0x4111, 0x4125, 0x412F, 0x41AC };
+        std::cout << "Add WCDMA logs -> ";
+        print_container_uint16(log_codes);
+        dci.add_log_codes(log_codes);
+        sleep(10);
 
-			print_line();
-			log_codes = {0x512F, 0x5B2F, 0x5A64, 0x5A70};
-			std::cout << "\nSetting logs to catch:";
-			print_container_uint16(log_codes);
-			dci.set_log_codes(log_codes);
+        print_line();
+        log_codes = { 0xB031, 0xB119, 0xB197, 0xB0CB };
+        std::cout << "Add LTE logs -> ";
+        print_container_uint16(log_codes);
+        dci.add_log_codes(log_codes);
+        sleep(10);
 
-			sleep(10);
+        print_line();
+        std::cout << "Cleanup logs list\n";
+        dci.reset_log_codes();
+        sleep(5);
+    }
 
-			print_line();
-			dci.reset_log_codes();
-			sleep(10);
-		}
-	}
+    std::cout << "DCI UNIT TEST finished\n";
 
-	std::cout << "\nDCI unit test is done\n";
-
-	return 0;
+    return 0;
 }
