@@ -16,9 +16,9 @@
 #include "common.hh"
 
 // https://www.tldp.org/HOWTO/text/Serial-Programming-HOWTO
-struct sigaction saio;    /* definition of signal action */         
+struct sigaction saio;    /* definition of signal action */
 
-int wait_flag = true;       /* TRUE while no signal received */   
+int wait_flag = true;       /* TRUE while no signal received */
 
 void signal_handler_IO (int /*status*/)
 {
@@ -48,15 +48,13 @@ ModemAt::ModemAt(const char *device_name, bool debug)
     int flags = fcntl(fd_, F_GETFL, 0);
     fcntl(fd_, F_SETFL, flags | O_NONBLOCK);
 
-    // Send \r
-    write_("");
+    write_("");  // Send \r
 
     // Flush input
-    std::cout << "Flashing input\r\n";
+    std::cout << "Flashing input\n";
     read_();
 
-    // Disable echo
-    write_("E0");
+    write_("E0");  // Disable echo
     read_();
 }
 
@@ -64,10 +62,9 @@ ModemAt::~ModemAt()
 {
     if(fd_ > 0)
     {
-        // Enable echo
-        std::cout << "\n--------------------------------------------\n";
-        std::cout << "ModemAt cleanup\r\n";
-        write_("E1;V1");
+        std::cout << "--------------------------------------------\n";
+        std::cout << "ModemAt cleanup\n";
+        write_("E1;V1");  // Enable echo
         read_();
     }
 }
@@ -111,7 +108,7 @@ std::string ModemAt::read_(unsigned timeout)
                 break;
             }
 
-            pos =  result.find("\r\nERROR\r\n");
+            pos =  result.find("ERROR\n");
 
             if(pos != std::string::npos)
             {
@@ -126,7 +123,7 @@ std::string ModemAt::read_(unsigned timeout)
 
     if(debug_)
     {
-        std::cout << "\nREAD finished, length:" << result.length();
+        std::cout << "READ finished | length:" << result.length() << "\n";
     }
 
     return result;
@@ -137,7 +134,7 @@ void ModemAt::write_(const std::string command)
     std::string full_cmd = "AT" + command + "\r\n";
 
     if(debug_)
-        std::cout << "\nWRITE " << full_cmd;
+        std::cout << "\r\nWRITE " << full_cmd;
 
     size_t written = write(fd_, full_cmd.c_str(), full_cmd.size());
 

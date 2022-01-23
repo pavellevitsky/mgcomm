@@ -1,8 +1,6 @@
 /*!
  * @file ut-ModemAt.cpp
- *
  * @brief Modem AT Commands I/O unit test (example)
- *
  * @author Roman Raisin (roman.raisin@gmail.com)
  *
  * How to use: just run.
@@ -16,16 +14,18 @@
 #include <fstream>
 #include "ModemAt.hh"
 
-int main(int argc, char ** argv)
+int main (int argc, char ** argv)
 {
-    bool is_debug = false;
-    bool is_file = false;
     bool is_command = false;
-    std::string str_command;
+    bool is_file    = false;
+    bool is_debug   = false;
+    std::string cmd;
+    std::string resp;
 
     if (argc == 1)
     {
         std::cout << "USAGE : [-d | -f] [-c AT$MGPHYCFG=param1,param2,...]\n";
+        return 0;
     }
     else if (argc == 2)
     {
@@ -43,7 +43,7 @@ int main(int argc, char ** argv)
         if (argv[1][0] == '-' && argv[1][1] == 'c')
         {
             is_command = true;
-            str_command.assign(argv[2]);
+            cmd.assign(argv[2]);
         }
     }
     else if (argc == 4)
@@ -55,22 +55,19 @@ int main(int argc, char ** argv)
         if (argv[2][0] == '-' && argv[2][1] == 'c')
         {
             is_command = true;
-            str_command.assign(argv[3]);
+            cmd.assign(argv[3]);
         }
     }
 
     ModemAt modem("/dev/smd11", is_debug);
 
-    auto response = modem.at_cmd("");
-    std::cout << "Response: " << response << "\n";
     std::cout << "--------------------------------------------\n";
 
     if (is_command)
     {
-        std::cout << "\n--------------------------------------------\n";
-        std::cout << "AT" << str_command.c_str() << "\n";
-        response = modem.at_cmd(str_command.c_str());
-        std::cout << response;
+        std::cout << "AT" << cmd.c_str() << "\n";
+        resp = modem.at_cmd(cmd.c_str());
+        std::cout << resp;
     }
     else if (is_file)
     {
@@ -87,9 +84,9 @@ int main(int argc, char ** argv)
                 if(line.length() > 0)
                 {
                     std::cout << "\n--------------------------------------------\n";
-                    std::cout << "AT" << line << "\n";
-                    response = modem.at_cmd(line);
-                    std::cout << response;
+                    std::cout << "AT" << line << "\r\n";
+                    resp = modem.at_cmd(line);
+                    std::cout << resp;
                 }
             }
             at_infile.close();
@@ -97,15 +94,15 @@ int main(int argc, char ** argv)
     }
     else
     {
-        std::string commands[] = {"+CGMI", "+CFUN?", "$MGPHYCFG?", "$MGPHYCFG=1"};
-        std::cout << "Read AT Commands from hard-coded list\n";
+        std::string commands[] = {"I", "+CGMI", "+CFUN?", "$MGPHYCFG?"};
+        std::cout << "Execute below hard-coded list : ATI, AT+CGMI, AT+CFUN?, AT$MGPHYCFG?\n";
 
         for(auto cmd: commands)
         {
             std::cout << "\n--------------------------------------------\n";
             std::cout << std::string("AT") + cmd;
-            response = modem.at_cmd(cmd);
-            std::cout << response;
+            resp = modem.at_cmd(cmd);
+            std::cout << resp;
         }
     }
 
