@@ -144,19 +144,19 @@ do
   echo '** ------------------------------------------------ **'
   echo '**  0  Exit                                         **'
   echo '**  1  Reset device                                 **'
-  echo '**  2  Show modem FW version                        **'
-  echo '**  3  Show IMSI slot 1                             **'
-  echo '**  4  Show IMSI slot 2                             **'
-  echo '**  5  Set GSM preffered network type               **'
-  echo '**  6  Set WCDMA preffered network type             **'
-  echo '**  7  Set LTE preffered network type               **'
-  echo '**  8  Camp on LTE cell (switch to LTE before)      **'
+  echo '**  2  Set GSM preffered network type               **'
+  echo '**  3  Set WCDMA preffered network type             **'
+  echo '**  4  Set LTE preffered network type               **'
+  echo '**  5  Camp on LTE cell (switch to LTE before)      **'
+  echo '** ------------------------------------------------ **'
+  echo '**  V  Show modem FW version                        **'
+  echo '**  I  Show IMSI for both slots                     **'
+  echo '**  N  Show Neighbour cells (GSM/WCDMA/LTE)         **'
+  echo '**  P  Show Paging signals                          **'
   echo '**  S  Trigger power scan (GSM+WCDMA+LTE)           **'
   echo '**  G  Trigger power scan GSM                       **'
   echo '**  W  Trigger power scan WCDMA                     **'
   echo '**  L  Trigger power scan LTE                       **'
-  echo '**  N  Show neighbour cells (WCDMA/LTE)             **'
-  echo '**  P  Paging signals                               **'
   echo '** ------------------------------------------------ **'
   echo '**  UL transmission configuration                   **'
   echo '** ------------------------------------------------ **'
@@ -172,19 +172,17 @@ do
        ;;
     1) adb reboot
        ;;
-    2) adb shell "read_diag --req GET_VERSION; sleep 2"
+    2) adb shell "read_diag --req RAT_SEL:1; sleep 2"
        ;;
-    3) adb shell "read_diag --req GET_IMSI:1; sleep 2"
+    3) adb shell "read_diag --req RAT_SEL:2; sleep 2"
        ;;
-    4) adb shell "read_diag --req GET_IMSI:2; sleep 2"
+    4) adb shell "read_diag --req RAT_SEL:3; sleep 2"
        ;;
-    5) adb shell "read_diag --req RAT_SEL:1; sleep 2"
+    5) camp_lte_cell
        ;;
-    6) adb shell "read_diag --req RAT_SEL:2; sleep 2"
+    V) adb shell "read_diag --req GET_VERSION; sleep 2"
        ;;
-    7) adb shell "read_diag --req RAT_SEL:3; sleep 2"
-       ;;
-    8) camp_lte_cell
+    I) adb shell "read_diag --req GET_IMSI; sleep 2"
        ;;
     S) adb shell "read_diag --req SCAN:0; sleep 2"
        ;;
@@ -194,10 +192,10 @@ do
        ;;
     L) adb shell "read_diag --req SCAN:3; sleep 2"
        ;;
-    N) x-terminal-emulator -e "adb shell 'read_diag --events 0 --msgs 0:0x0 --logs 0x4111,0x41AC,0xB031,0xB119,0xB197'"
+    N) x-terminal-emulator -e "adb shell 'read_diag --msgs 0:0x0 --events 0 --logs 0x5A71,0x4111,0x41AC,0xB031,0xB119,0xB197'"
        sleep 5
        ;;
-    P) x-terminal-emulator -e "adb shell 'read_diag --events 0 --msgs 0:0x0 --logs 0xB0C0,0xB0CB'"
+    P) x-terminal-emulator -e "adb shell 'read_diag --msgs 0:0x0 --events 565 --logs 0x5B2F,0xB0CB'"
        sleep 5
        ;;
     A) adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG=?'"
@@ -208,7 +206,7 @@ do
        ;;
     C) send_at_mgphycfg
        ;;
-    *) echo Valid options are : 0..9, A, B, C, N, P
+    *) echo Valid options are : 0..5, A, B, C, N, P, V, I
        read -p "Press ENTER to continue ..."
        ;;
   esac
