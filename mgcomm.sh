@@ -16,8 +16,7 @@ camp_lte_cell()
   echo "read_diag --req CAMP_LTE:$earfcn,$pci"
   adb shell "read_diag --req CAMP_LTE:$earfcn,$pci"
 
-  echo
-  read -p "Press ENTER to continue ..."
+  sleep 5
 }
 
 
@@ -105,8 +104,9 @@ fi
 
 dci_count_1=`adb shell ps dciscan | wc -l`
 dci_count_2=`adb shell ps /system/bin/./dciscan | wc -l`
+dci_count_3=`adb shell ps /system/bin/dciscan | wc -l`
 
-if [[ $dci_count_1 == 2 || $dci_count_2 == 2 ]]
+if [[ $dci_count_1 == 2 || $dci_count_2 == 2 || $dci_count_3 == 2 ]]
 then
   echo DCI Server is running
 else
@@ -163,6 +163,8 @@ do
   echo '**  B  Read current parameters values               **'
   echo '**  C  Send AT$MGPHYCFG with modified values        **'
   echo '** ------------------------------------------------ **'
+  echo '**  F  Entry Flight Mode                            **'
+  echo '**  E  Exit from Flight Mode                        **'
   echo '**  R  Reset the device                             **'
   echo '******************************************************'
 
@@ -199,15 +201,19 @@ do
     P) x-terminal-emulator -e "adb shell 'read_diag --msgs 0:0x0 --events 565 --logs 0x5B2F,0xB0CB'"
        sleep 5
        ;;
-    A) adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG=?'"
+    A) adb shell ./data/local/tmp/ut-ModemAt "-c $MGPHYCFG=?"
        read -p "Press ENTER to continue ..."
        ;;
-    B) adb shell ./data/local/tmp/ut-ModemAt "-c '\$MGPHYCFG?'"
+    B) adb shell ./data/local/tmp/ut-ModemAt "-c $MGPHYCFG?"
        read -p "Press ENTER to continue ..."
        ;;
     C) send_at_mgphycfg
        ;;
-    *) echo Valid options are : 0..4, A, B, C, N, P, V, I, R
+    F) adb shell ./data/local/tmp/ut-ModemAt "-c +CFUN=0"
+       ;;
+    E) adb shell ./data/local/tmp/ut-ModemAt "-c +CFUN=1"
+       ;;
+    *) echo Valid options are : 0..4, A, B, C, N, P, V, I, R, F, E
        read -p "Press ENTER to continue ..."
        ;;
   esac
