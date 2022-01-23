@@ -143,11 +143,10 @@ do
   echo '**               Welcome to MGComm                  **'
   echo '** ------------------------------------------------ **'
   echo '**  0  Exit                                         **'
-  echo '**  1  Reset device                                 **'
-  echo '**  2  Set GSM preffered network type               **'
-  echo '**  3  Set WCDMA preffered network type             **'
-  echo '**  4  Set LTE preffered network type               **'
-  echo '**  5  Camp on LTE cell (switch to LTE before)      **'
+  echo '**  1  Set GSM preffered network type               **'
+  echo '**  2  Set WCDMA preffered network type             **'
+  echo '**  3  Set LTE preffered network type               **'
+  echo '**  4  Camp on LTE cell (switch to LTE before)      **'
   echo '** ------------------------------------------------ **'
   echo '**  V  Show modem FW version                        **'
   echo '**  I  Show IMSI for both slots                     **'
@@ -163,22 +162,24 @@ do
   echo '**  A  Show valid AT$MGPHYCFG parameters range      **'
   echo '**  B  Read current parameters values               **'
   echo '**  C  Send AT$MGPHYCFG with modified values        **'
+  echo '** ------------------------------------------------ **'
+  echo '**  R  Reset the device                             **'
   echo '******************************************************'
 
   read -p "$device_name | select operation : " option
 
   case $option in
+    R) adb reboot
+       ;;
     0) stay_in_loop=false
        ;;
-    1) adb reboot
+    1) adb shell "read_diag --req RAT_SEL:1; sleep 2"
        ;;
-    2) adb shell "read_diag --req RAT_SEL:1; sleep 2"
+    2) adb shell "read_diag --req RAT_SEL:2; sleep 2"
        ;;
-    3) adb shell "read_diag --req RAT_SEL:2; sleep 2"
+    3) adb shell "read_diag --req RAT_SEL:3; sleep 2"
        ;;
-    4) adb shell "read_diag --req RAT_SEL:3; sleep 2"
-       ;;
-    5) camp_lte_cell
+    4) camp_lte_cell
        ;;
     V) adb shell "read_diag --req GET_VERSION; sleep 2"
        ;;
@@ -206,7 +207,7 @@ do
        ;;
     C) send_at_mgphycfg
        ;;
-    *) echo Valid options are : 0..5, A, B, C, N, P, V, I
+    *) echo Valid options are : 0..4, A, B, C, N, P, V, I, R
        read -p "Press ENTER to continue ..."
        ;;
   esac
